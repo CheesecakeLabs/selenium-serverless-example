@@ -1,0 +1,64 @@
+org: karranrb
+app: aws-python-scheduled-cron
+service: aws-python-scheduled-cron
+
+frameworkVersion: "3"
+
+useDotenv: true
+
+provider:
+  name: aws
+  stage: ${opt:stage, 'local'}
+  runtime: python3.9
+  region: eu-central-1
+  timeout: 30
+  endpointType: regional
+  tags:
+    application: ops-lambda-scraper
+    iac: serverless
+    environment: ${sls:stage}
+  ecr:
+    images:
+      img:
+        path: "./"
+        platform: linux/amd64
+
+package:
+  patterns:
+    - "!package.json"
+    - "!package-lock.json"
+    - "!.serverless/**"
+    - "!.idea/**"
+    - "!.env/**"
+    - "!venv/**"
+    - "!node_modules/**"
+    - "!.nox/**"
+    - "!.env"
+    - "!.pytest_cache/**"
+    - "!__pycache__/**"
+functions:
+  example:
+    environment:
+      CHROMIUM_PATH: ${env:CHROMIUM_PATH}
+      CHROMEDRIVER_PATH: ${env:CHROMEDRIVER_PATH}
+    timeout: 60
+    memorySize: 2048
+    image:
+      name: img
+      command:
+        - src.handlers.example.handler
+    events:
+      - schedule: cron(0 */6 * * ? *)
+  
+custom:
+  corsAllowedHeaders:
+    - Content-Type
+    - X-Amz-Date
+    - X-Api-Key
+    - X-Amz-Security-Token
+    - X-Amz-User-Agent
+    - X-Request-Id
+  stage: ${opt:stage, self:provider.stage}
+  environments:
+    local: development
+    production: production
