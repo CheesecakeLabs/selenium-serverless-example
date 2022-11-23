@@ -25,6 +25,15 @@ $ python -m src.handlers.example
 
 You can check the scripts on the makefile
 
+
+## Todo
+
+- [ ] Setup CI/CD
+
+## Important
+
+Do not versionate .env files in real projects
+
 ## More information
 
 1. https://github.com/umihico/docker-selenium-lambda
